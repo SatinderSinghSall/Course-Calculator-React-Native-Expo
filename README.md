@@ -19,15 +19,15 @@ Designed with simplicity, clean UI, and student productivity in mind.
 
 ### 🏠 Home Screen
 
-<img src="./assets/images/HomeScreen.png" alt="Home Screen" width="300" />
+<img src="./assets/images/HomeScreen.png" alt="Home Screen" />
 
 ### 📊 Percentage Calculator
 
-<img src="./assets/images/PercentageScreen.png" alt="Percentage Calculator Screen" width="300" />
+<img src="./assets/images/PercentageScreen.png" alt="Percentage Calculator Screen" />
 
 ### 🎓 CGPA Calculator
 
-<img src="./assets/images/CGPAScreen.png" alt="CGPA Calculator Screen" width="300" />
+<img src="./assets/images/CGPAScreen.png" alt="CGPA Calculator Screen" />
 
 ---
 
