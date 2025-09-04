@@ -15,7 +15,19 @@ Designed with simplicity, clean UI, and student productivity in mind.
 
 ---
 
-## 📸 Screenshots
+## 📸 App's Screenshots
+
+### 🏠 Home Screen
+
+<img src="./assets/images/HomeScreen.png" alt="Home Screen" width="300" />
+
+### 📊 Percentage Calculator
+
+<img src="./assets/images/PercentageScreen.png" alt="Percentage Calculator Screen" width="300" />
+
+### 🎓 CGPA Calculator
+
+<img src="./assets/images/CGPAScreen.png" alt="CGPA Calculator Screen" width="300" />
 
 ---
 
