@@ -10,6 +10,7 @@ import {
 import { Button, Card } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CgpaScreen() {
   const router = useRouter();
@@ -66,110 +67,147 @@ export default function CgpaScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Button
-        mode="outlined"
-        onPress={() => router.back()}
-        style={styles.backButton}
-      >
-        ⬅ Back
-      </Button>
-
-      <Text style={styles.title}>Semester-wise CGPA Calculator</Text>
-
-      <Card style={styles.card}>
-        <Text style={styles.label}>Select Number of Semesters:</Text>
-        <Picker
-          selectedValue={semesterCount}
-          style={styles.picker}
-          onValueChange={(val) => handleSemesterCountChange(val)}
-        >
-          <Picker.Item label="-- Select --" value={0} />
-          {Array.from({ length: 12 }, (_, i) => (
-            <Picker.Item key={i + 1} label={`${i + 1}`} value={i + 1} />
-          ))}
-        </Picker>
-      </Card>
-
-      {semesters.map((sem, index) => (
-        <Card key={index} style={styles.card}>
-          <Text style={styles.subtitle}>Semester {index + 1}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="SGPA"
-            keyboardType="numeric"
-            value={sem.sgpa}
-            onChangeText={(t) => updateSemester(index, "sgpa", t)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Credits"
-            keyboardType="numeric"
-            value={sem.credits}
-            onChangeText={(t) => updateSemester(index, "credits", t)}
-          />
-        </Card>
-      ))}
-
-      <View style={styles.buttonRow}>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.container}>
         <Button
-          mode="contained"
-          onPress={() => handleSemesterCountChange(semesterCount)}
-          style={styles.button}
+          mode="text"
+          icon="arrow-left"
+          onPress={() => router.back()}
+          labelStyle={styles.backLabel}
+          contentStyle={styles.backContent}
+          style={styles.backButton}
         >
-          Generate
+          Back
         </Button>
-        <Button mode="contained" onPress={calculateCgpa} style={styles.button}>
-          Calculate
-        </Button>
-      </View>
 
-      {cgpa !== null && (
-        <Card style={styles.resultCard}>
-          <Text style={styles.result}>Final CGPA: {cgpa.toFixed(2)}</Text>
+        <Text style={styles.title}>Semester-wise CGPA Calculator</Text>
+
+        <Card style={styles.card}>
+          <Text style={styles.label}>Select Number of Semesters:</Text>
+          <Picker
+            selectedValue={semesterCount}
+            style={styles.picker}
+            onValueChange={(val) => handleSemesterCountChange(val)}
+          >
+            <Picker.Item label="-- Select --" value={0} />
+            {Array.from({ length: 12 }, (_, i) => (
+              <Picker.Item key={i + 1} label={`${i + 1}`} value={i + 1} />
+            ))}
+          </Picker>
         </Card>
-      )}
-    </ScrollView>
+
+        {semesters.map((sem, index) => (
+          <Card key={index} style={styles.card}>
+            <Text style={styles.subtitle}>Semester {index + 1}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="SGPA"
+              keyboardType="numeric"
+              value={sem.sgpa}
+              onChangeText={(t) => updateSemester(index, "sgpa", t)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Credits"
+              keyboardType="numeric"
+              value={sem.credits}
+              onChangeText={(t) => updateSemester(index, "credits", t)}
+            />
+          </Card>
+        ))}
+
+        <View style={styles.buttonRow}>
+          <Button
+            mode="contained"
+            onPress={() => handleSemesterCountChange(semesterCount)}
+            style={styles.button}
+          >
+            Generate
+          </Button>
+          <Button
+            mode="contained"
+            onPress={calculateCgpa}
+            style={styles.button}
+          >
+            Calculate
+          </Button>
+        </View>
+
+        {cgpa !== null && (
+          <Card style={styles.resultCard}>
+            <Text style={styles.result}>Final CGPA: {cgpa.toFixed(2)}</Text>
+          </Card>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   container: {
     padding: 24,
+    paddingBottom: 40,
   },
+
   backButton: {
     marginBottom: 12,
     alignSelf: "flex-start",
+    borderRadius: 24,
+    backgroundColor: "#F5F5F5",
   },
+  backContent: {
+    flexDirection: "row-reverse",
+  },
+  backLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1976D2",
+  },
+
   title: {
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 16,
+    color: "#333",
   },
   label: {
     marginBottom: 8,
     fontSize: 16,
+    color: "#444",
   },
   subtitle: {
     fontSize: 16,
     marginBottom: 8,
     fontWeight: "600",
+    color: "#555",
   },
+
   card: {
     marginBottom: 16,
     padding: 16,
+    borderRadius: 12,
+    elevation: 2, // subtle shadow
   },
+
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 10,
     borderRadius: 8,
     marginBottom: 12,
+    fontSize: 15,
+    backgroundColor: "#FAFAFA",
   },
+
   picker: {
     width: "100%",
   },
+
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -178,9 +216,14 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 4,
+    borderRadius: 12,
   },
+
   resultCard: {
     padding: 24,
+    borderRadius: 12,
+    elevation: 3,
+    backgroundColor: "#E3F2FD",
   },
   result: {
     fontSize: 20,

@@ -1,14 +1,18 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { Card, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView
+      style={styles.container}
+      edges={["top", "left", "right", "bottom"]}
+    >
       <Text style={styles.title}>Course Calculator</Text>
 
       <Card
@@ -32,7 +36,7 @@ export default function HomeScreen() {
       </Card>
 
       <Text style={styles.footer}>Developed with ❤️ by Satinder</Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -41,7 +45,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f8f9fa",
     alignItems: "center",
-    padding: 20,
+    paddingHorizontal: 20,
   },
   title: {
     width: "100%",

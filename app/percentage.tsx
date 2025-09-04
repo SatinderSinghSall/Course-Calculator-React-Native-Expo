@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TextInput, ScrollView } from "react-native";
+import { StyleSheet, TextInput, ScrollView } from "react-native";
 import { Text, Button, Card } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PercentageScreen() {
   const router = useRouter();
@@ -30,72 +31,83 @@ export default function PercentageScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Percentage Calculator</Text>
-
-      <Card style={styles.card}>
-        <Card.Content>
-          <Text style={styles.label}>Select number of subjects:</Text>
-          <Picker
-            selectedValue={subjectCount}
-            onValueChange={(value) => handleSubjectChange(value)}
-            style={styles.picker}
-          >
-            {[...Array(10).keys()].map((n) => (
-              <Picker.Item key={n + 1} label={`${n + 1}`} value={n + 1} />
-            ))}
-          </Picker>
-        </Card.Content>
-      </Card>
-
-      <Card style={styles.card}>
-        <Card.Content>
-          {marks.map((mark, index) => (
-            <TextInput
-              key={index}
-              style={styles.input}
-              keyboardType="numeric"
-              placeholder={`Enter marks for Subject ${index + 1}`}
-              value={mark}
-              onChangeText={(text) => handleMarkChange(text, index)}
-            />
-          ))}
-        </Card.Content>
-      </Card>
-
-      <Button
-        mode="contained"
-        style={styles.button}
-        onPress={calculatePercentage}
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={["top", "left", "right", "bottom"]}
+    >
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
       >
-        Calculate
-      </Button>
+        <Text style={styles.title}>Percentage Calculator</Text>
 
-      {percentage !== null && (
-        <Card style={styles.resultCard}>
+        <Card style={styles.card}>
           <Card.Content>
-            <Text style={styles.resultText}>
-              Percentage: {percentage.toFixed(2)}%
-            </Text>
+            <Text style={styles.label}>Select number of subjects:</Text>
+            <Picker
+              selectedValue={subjectCount}
+              onValueChange={(value) => handleSubjectChange(value)}
+              style={styles.picker}
+            >
+              {[...Array(10).keys()].map((n) => (
+                <Picker.Item key={n + 1} label={`${n + 1}`} value={n + 1} />
+              ))}
+            </Picker>
           </Card.Content>
         </Card>
-      )}
 
-      <Button
-        mode="outlined"
-        style={styles.backButton}
-        onPress={() => router.back()}
-      >
-        ⬅ Back
-      </Button>
-    </ScrollView>
+        <Card style={styles.card}>
+          <Card.Content>
+            {marks.map((mark, index) => (
+              <TextInput
+                key={index}
+                style={styles.input}
+                keyboardType="numeric"
+                placeholder={`Enter marks for Subject ${index + 1}`}
+                value={mark}
+                onChangeText={(text) => handleMarkChange(text, index)}
+              />
+            ))}
+          </Card.Content>
+        </Card>
+
+        <Button
+          mode="contained"
+          style={styles.button}
+          onPress={calculatePercentage}
+        >
+          Calculate
+        </Button>
+
+        {percentage !== null && (
+          <Card style={styles.resultCard}>
+            <Card.Content>
+              <Text style={styles.resultText}>
+                Percentage: {percentage.toFixed(2)}%
+              </Text>
+            </Card.Content>
+          </Card>
+        )}
+
+        <Button
+          mode="outlined"
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          ⬅ Back
+        </Button>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+  },
   container: {
     flexGrow: 1,
-    backgroundColor: "#f8f9fa",
     alignItems: "center",
     padding: 20,
   },
