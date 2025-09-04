@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Card, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -13,14 +13,17 @@ export default function HomeScreen() {
       style={styles.container}
       edges={["top", "left", "right", "bottom"]}
     >
-      <Text style={styles.title}>Course Calculator</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Course Calculator</Text>
+        <Text style={styles.subtitle}>Quick tools for your academics</Text>
+      </View>
 
       <Card
         style={[styles.card, { borderColor: "#007bff" }]}
         onPress={() => navigation.navigate("percentage")}
       >
         <Card.Content style={styles.cardContent}>
-          <MaterialCommunityIcons name="percent" size={48} color="#007bff" />
+          <MaterialCommunityIcons name="percent" size={52} color="#007bff" />
           <Text style={styles.cardText}>Percentage Calculator</Text>
         </Card.Content>
       </Card>
@@ -30,7 +33,11 @@ export default function HomeScreen() {
         onPress={() => navigation.navigate("cgpa")}
       >
         <Card.Content style={styles.cardContent}>
-          <MaterialCommunityIcons name="star" size={48} color="#6f42c1" />
+          <MaterialCommunityIcons
+            name="star-circle"
+            size={52}
+            color="#6f42c1"
+          />
           <Text style={styles.cardText}>CGPA Calculator</Text>
         </Card.Content>
       </Card>
@@ -43,43 +50,52 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#fdfdfd",
     alignItems: "center",
     paddingHorizontal: 20,
   },
+  header: {
+    marginTop: 20,
+    marginBottom: 30,
+    alignItems: "center",
+  },
   title: {
-    width: "100%",
-    textAlign: "center",
-    backgroundColor: "#212529",
-    color: "white",
-    fontSize: 28,
-    fontWeight: "600",
-    paddingVertical: 24,
-    marginBottom: 24,
+    fontSize: 30,
+    fontWeight: "700",
+    color: "#212529",
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "#6c757d",
+    marginTop: 6,
   },
   card: {
-    width: "90%",
-    borderRadius: 20,
+    width: "92%",
+    borderRadius: 24,
     borderWidth: 1,
-    marginBottom: 16,
-    elevation: 4,
+    marginBottom: 18,
+    elevation: 6,
     backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
   },
   cardContent: {
     alignItems: "center",
-    padding: 20,
+    padding: 28,
   },
   cardText: {
-    marginTop: 12,
-    fontSize: 18,
-    fontWeight: "500",
+    marginTop: 14,
+    fontSize: 19,
+    fontWeight: "600",
     color: "#212529",
     textAlign: "center",
   },
   footer: {
     marginTop: "auto",
-    marginBottom: 24,
+    marginBottom: 26,
     fontSize: 13,
-    color: "#6c757d",
+    color: "#adb5bd",
   },
 });
