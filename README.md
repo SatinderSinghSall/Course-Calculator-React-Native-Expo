@@ -1,50 +1,70 @@
-# Welcome to your Expo app 👋
+````markdown
+# 📘 Course Calculator (React Native + Expo)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern mobile app built with **React Native** and **Expo** that helps students easily calculate their **Percentage** and **CGPA** semester-wise.  
+Designed with simplicity, clean UI, and student productivity in mind.
 
-## Get started
+---
 
-1. Install dependencies
+## ✨ Features
 
-   ```bash
-   npm install
-   ```
+✅ Percentage Calculator (based on subjects)  
+✅ CGPA Calculator (semester-wise with credits)  
+✅ Modern UI with React Native Paper  
+✅ Smooth navigation using Expo Router  
+✅ Cross-platform (Android & iOS) support
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 📸 Screenshots
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🛠️ Tech Stack
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- ⚛️ **React Native (Expo)**
+- 🎨 **React Native Paper** (UI components)
+- 🧭 **Expo Router** (navigation)
+- 🎛️ **@react-native-picker/picker** (dropdowns)
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## 🚀 Getting Started
+
+### 1. Clone the repository
 
 ```bash
-npm run reset-project
+git clone https://github.com/your-username/course-calculator.git
+cd course-calculator/course-calculator
+```
+````
+
+### 2. Install dependencies
+
+```bash
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 3. Run the app
 
-## Learn more
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### 4. Open in a device/emulator
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- Press **`a`** → run on Android emulator
+- Press **`i`** → run on iOS simulator
+- Or scan the QR code in Expo Go app 📱
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 📂 Project Structure
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## 🧑‍💻 Developer
+
+Made with ❤️ by **Satinder Singh Sall**
+
+---
