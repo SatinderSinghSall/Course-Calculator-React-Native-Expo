@@ -27,7 +27,7 @@ Designed with simplicity, clean UI, and student productivity in mind.
 
 ### 🎓 CGPA Calculator
 
-<img src="./assets/images/CGPAScreen.png" alt="CGPA Calculator Screen" />
+<img src="./assets/images/CGPAscreen.png" alt="CGPA Calculator Screen" />
 
 ---
 
