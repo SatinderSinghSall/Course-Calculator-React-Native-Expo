@@ -4,7 +4,7 @@ import { Text, Button, Card } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialCommunityIcons } from "@expo/vector-icons"; // 👈 Added for back icon
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function PercentageScreen() {
   const router = useRouter();
@@ -40,7 +40,6 @@ export default function PercentageScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        {/* Back Button */}
         <Button
           mode="outlined"
           style={styles.backButton}
@@ -58,7 +57,6 @@ export default function PercentageScreen() {
           Back
         </Button>
 
-        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>📊 Percentage Calculator</Text>
           <Text style={styles.subtitle}>
@@ -66,7 +64,6 @@ export default function PercentageScreen() {
           </Text>
         </View>
 
-        {/* Subject Picker */}
         <Card style={styles.card}>
           <Card.Content>
             <Text style={styles.label}>Number of subjects</Text>
@@ -84,7 +81,6 @@ export default function PercentageScreen() {
           </Card.Content>
         </Card>
 
-        {/* Marks Inputs */}
         <Card style={styles.card}>
           <Card.Content>
             {marks.map((mark, index) => (
@@ -100,7 +96,6 @@ export default function PercentageScreen() {
           </Card.Content>
         </Card>
 
-        {/* Calculate Button */}
         <Button
           mode="contained"
           style={styles.button}
@@ -109,7 +104,6 @@ export default function PercentageScreen() {
           Calculate Percentage
         </Button>
 
-        {/* Result */}
         {percentage !== null && (
           <Card style={styles.resultCard}>
             <Card.Content>

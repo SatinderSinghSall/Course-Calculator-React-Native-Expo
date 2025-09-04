@@ -70,7 +70,6 @@ export default function CgpaScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Back Button */}
         <Button
           mode="outlined"
           style={styles.backButton}
@@ -88,7 +87,6 @@ export default function CgpaScreen() {
           Back
         </Button>
 
-        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>🎓 CGPA Calculator</Text>
           <Text style={styles.subtitle}>
@@ -96,7 +94,6 @@ export default function CgpaScreen() {
           </Text>
         </View>
 
-        {/* Semester Picker */}
         <Card style={styles.card}>
           <Text style={styles.label}>Select number of semesters</Text>
           <View style={styles.pickerWrapper}>
@@ -113,7 +110,6 @@ export default function CgpaScreen() {
           </View>
         </Card>
 
-        {/* Semester Inputs */}
         {semesters.map((sem, index) => (
           <Card key={index} style={styles.card}>
             <Text style={styles.semesterTitle}>Semester {index + 1}</Text>
@@ -134,7 +130,6 @@ export default function CgpaScreen() {
           </Card>
         ))}
 
-        {/* Buttons */}
         <View style={styles.buttonRow}>
           <Button
             mode="outlined"
@@ -152,7 +147,6 @@ export default function CgpaScreen() {
           </Button>
         </View>
 
-        {/* Result */}
         {cgpa !== null && (
           <Card style={styles.resultCard}>
             <Text style={styles.resultValue}>{cgpa.toFixed(2)}</Text>
