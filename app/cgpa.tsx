@@ -1,20 +1,21 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from "react-native";
-import { Button, Card } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Button, Card, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function CgpaScreen() {
   const router = useRouter();
+
   const [semesterCount, setSemesterCount] = useState(0);
   const [semesters, setSemesters] = useState<
     { sgpa: string; credits: string }[]
@@ -23,8 +24,10 @@ export default function CgpaScreen() {
 
   const handleSemesterCountChange = (count: number) => {
     setSemesterCount(count);
-    setSemesters(Array(count).fill({ sgpa: "", credits: "" }));
     setCgpa(null);
+    setSemesters(
+      Array.from({ length: count }, () => ({ sgpa: "", credits: "" }))
+    );
   };
 
   const updateSemester = (
@@ -32,70 +35,129 @@ export default function CgpaScreen() {
     field: "sgpa" | "credits",
     value: string
   ) => {
-    const updated = [...semesters];
-    updated[index] = { ...updated[index], [field]: value };
-    setSemesters(updated);
+    const clean = value.replace(/\s+/g, "");
+
+    setSemesters((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: clean };
+      return updated;
+    });
+  };
+
+  // =============================
+  // VALIDATIONS 🚨
+  // =============================
+  const validateInputs = () => {
+    if (semesterCount === 0) {
+      Alert.alert("Error", "Please select number of semesters!");
+      return false;
+    }
+
+    for (let i = 0; i < semesters.length; i++) {
+      const { sgpa, credits } = semesters[i];
+
+      // empty
+      if (!sgpa || !credits) {
+        Alert.alert(
+          "Missing Input",
+          `Please enter SGPA and Credits for Semester ${i + 1}`
+        );
+        return false;
+      }
+
+      const s = parseFloat(sgpa);
+      const c = parseFloat(credits);
+
+      // Not numbers
+      if (isNaN(s) || isNaN(c)) {
+        Alert.alert(
+          "Invalid Input",
+          `Semester ${i + 1}: Only numeric values allowed`
+        );
+        return false;
+      }
+
+      // SGPA range
+      if (s < 0 || s > 10) {
+        Alert.alert(
+          "Invalid SGPA",
+          `Semester ${i + 1}: SGPA must be between 0 and 10`
+        );
+        return false;
+      }
+
+      // Credits > 0
+      if (c <= 0) {
+        Alert.alert(
+          "Invalid Credits",
+          `Semester ${i + 1}: Credits must be greater than 0`
+        );
+        return false;
+      }
+
+      // (Optional strict behavior)
+      // if (!Number.isInteger(c)) {
+      //   Alert.alert(
+      //     "Invalid credits",
+      //     `Semester ${i + 1}: Credits must be whole numbers`
+      //   );
+      //   return false;
+      // }
+    }
+
+    return true;
   };
 
   const calculateCgpa = () => {
-    if (semesters.length === 0) {
-      Alert.alert("Error", "Please generate semester fields first!");
-      return;
-    }
+    if (!validateInputs()) return;
 
     let totalWeighted = 0;
     let totalCredits = 0;
 
-    for (let i = 0; i < semesters.length; i++) {
-      const sgpa = parseFloat(semesters[i].sgpa);
-      const credits = parseFloat(semesters[i].credits);
-
-      if (isNaN(sgpa) || isNaN(credits)) {
-        Alert.alert("Error", `Enter SGPA & Credits for Semester ${i + 1}`);
-        return;
-      }
-
-      totalWeighted += sgpa * credits;
-      totalCredits += credits;
-    }
+    semesters.forEach(({ sgpa, credits }) => {
+      const s = parseFloat(sgpa);
+      const c = parseFloat(credits);
+      totalWeighted += s * c;
+      totalCredits += c;
+    });
 
     if (totalCredits === 0) {
-      Alert.alert("Error", "Credits cannot be zero!");
+      Alert.alert("Error", "Credits cannot be zero");
       return;
     }
 
-    setCgpa(totalWeighted / totalCredits);
+    const val = totalWeighted / totalCredits;
+    setCgpa(Number(val.toFixed(2)));
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Button
-          mode="outlined"
+        {/* Back */}
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
-          contentStyle={styles.backContent}
-          labelStyle={styles.backLabel}
-          icon={() => (
-            <MaterialCommunityIcons
-              name="arrow-left"
-              size={20}
-              color="#495057"
-            />
-          )}
+          activeOpacity={0.7}
         >
-          Back
-        </Button>
+          <MaterialCommunityIcons
+            name="chevron-left"
+            size={20}
+            color="#374151"
+          />
+          <Text style={styles.backButtonText}>Back</Text>
+        </TouchableOpacity>
 
+        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>🎓 CGPA Calculator</Text>
           <Text style={styles.subtitle}>
-            Enter your SGPA & credits for each semester
+            Enter SGPA and credits for each semester
           </Text>
         </View>
 
+        {/* Semester Picker */}
         <Card style={styles.card}>
-          <Text style={styles.label}>Select number of semesters</Text>
+          <Text style={styles.label}>Number of Semesters</Text>
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={semesterCount}
@@ -110,9 +172,11 @@ export default function CgpaScreen() {
           </View>
         </Card>
 
+        {/* Semester inputs */}
         {semesters.map((sem, index) => (
           <Card key={index} style={styles.card}>
-            <Text style={styles.semesterTitle}>Semester {index + 1}</Text>
+            <Text style={styles.semTitle}>Semester {index + 1}</Text>
+
             <TextInput
               style={styles.input}
               placeholder="SGPA"
@@ -120,6 +184,7 @@ export default function CgpaScreen() {
               value={sem.sgpa}
               onChangeText={(t) => updateSemester(index, "sgpa", t)}
             />
+
             <TextInput
               style={styles.input}
               placeholder="Credits"
@@ -130,26 +195,29 @@ export default function CgpaScreen() {
           </Card>
         ))}
 
+        {/* Actions */}
         <View style={styles.buttonRow}>
           <Button
             mode="outlined"
-            onPress={() => handleSemesterCountChange(semesterCount)}
             style={[styles.button, styles.generateButton]}
+            onPress={() => handleSemesterCountChange(semesterCount)}
           >
-            Generate
+            Reset
           </Button>
+
           <Button
             mode="contained"
-            onPress={calculateCgpa}
             style={[styles.button, styles.calculateButton]}
+            onPress={calculateCgpa}
           >
             Calculate
           </Button>
         </View>
 
+        {/* Result */}
         {cgpa !== null && (
           <Card style={styles.resultCard}>
-            <Text style={styles.resultValue}>{cgpa.toFixed(2)}</Text>
+            <Text style={styles.resultValue}>{cgpa}</Text>
             <Text style={styles.resultLabel}>Final CGPA</Text>
           </Card>
         )}
@@ -158,6 +226,7 @@ export default function CgpaScreen() {
   );
 }
 
+// ========= STYLES =========
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -168,26 +237,25 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
 
-  // 🔙 Back Button
   backButton: {
-    borderRadius: 30,
-    backgroundColor: "#f1f3f5",
-    borderWidth: 0,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: "#F3F4F6",
+    borderColor: "#E5E7EB",
+    borderWidth: 1,
     alignSelf: "flex-start",
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  backContent: {
-    flexDirection: "row-reverse",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-  },
-  backLabel: {
+  backButtonText: {
     fontSize: 15,
-    color: "#495057",
-    marginLeft: 4,
+    fontWeight: "500",
+    color: "#374151",
   },
 
-  // Header
   header: {
     alignItems: "center",
     marginBottom: 24,
@@ -204,43 +272,41 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  // Cards
   card: {
     marginBottom: 16,
     padding: 16,
-    borderRadius: 16,
+    borderRadius: 18,
     backgroundColor: "white",
-    elevation: 3,
+    elevation: 2,
     shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
+
   label: {
-    marginBottom: 8,
     fontSize: 15,
     fontWeight: "500",
     color: "#343a40",
+    marginBottom: 8,
   },
-  semesterTitle: {
+  semTitle: {
     fontSize: 16,
-    marginBottom: 12,
     fontWeight: "600",
     color: "#0d6efd",
+    marginBottom: 12,
   },
 
-  // Inputs
   input: {
     borderWidth: 1,
     borderColor: "#dee2e6",
     padding: 12,
     borderRadius: 10,
-    marginBottom: 12,
     fontSize: 15,
+    marginBottom: 10,
     backgroundColor: "#fdfdfd",
   },
 
-  // Picker
   pickerWrapper: {
     borderWidth: 1,
     borderColor: "#dee2e6",
@@ -251,17 +317,16 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 
-  // Buttons
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 24,
+    marginTop: 10,
   },
   button: {
     flex: 1,
     marginHorizontal: 4,
     borderRadius: 12,
-    paddingVertical: 6,
   },
   generateButton: {
     borderColor: "#0d6efd",
@@ -270,17 +335,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#0d6efd",
   },
 
-  // Result
   resultCard: {
-    padding: 28,
+    padding: 26,
     borderRadius: 18,
-    elevation: 3,
     backgroundColor: "#e7f5ff",
     alignItems: "center",
   },
   resultValue: {
-    fontSize: 30,
-    fontWeight: "700",
+    fontSize: 32,
+    fontWeight: "800",
     color: "#0d6efd",
   },
   resultLabel: {

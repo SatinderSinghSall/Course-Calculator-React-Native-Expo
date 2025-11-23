@@ -1,33 +1,112 @@
-import React, { useState } from "react";
-import { StyleSheet, TextInput, ScrollView, View } from "react-native";
-import { Text, Button, Card } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Button, Card, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function PercentageScreen() {
   const router = useRouter();
+
   const [subjectCount, setSubjectCount] = useState(2);
   const [marks, setMarks] = useState<string[]>(["", ""]);
+  const [maxMarks, setMaxMarks] = useState<string[]>(["", ""]);
   const [percentage, setPercentage] = useState<number | null>(null);
 
   const handleSubjectChange = (value: number) => {
     setSubjectCount(value);
     setMarks(Array(value).fill(""));
+    setMaxMarks(Array(value).fill(""));
     setPercentage(null);
   };
 
-  const handleMarkChange = (text: string, index: number) => {
-    const updated = [...marks];
-    updated[index] = text;
-    setMarks(updated);
+  const handleMarkChange = (
+    text: string,
+    index: number,
+    type: "score" | "max"
+  ) => {
+    const cleaned = text.replace(/\s+/g, "");
+    if (type === "score") {
+      const updated = [...marks];
+      updated[index] = cleaned;
+      setMarks(updated);
+    } else {
+      const updated = [...maxMarks];
+      updated[index] = cleaned;
+      setMaxMarks(updated);
+    }
+  };
+
+  // =============================
+  // VALIDATIONS 🚨
+  // =============================
+  const validateInputs = () => {
+    for (let i = 0; i < subjectCount; i++) {
+      const obtained = marks[i];
+      const total = maxMarks[i];
+
+      // Empty field check
+      if (obtained === "" || total === "") {
+        Alert.alert("Missing values", `Please fill Subject ${i + 1}`);
+        return false;
+      }
+
+      // Non-number validation
+      if (isNaN(Number(obtained)) || isNaN(Number(total))) {
+        Alert.alert("Invalid input", `Subject ${i + 1}: Enter only numbers.`);
+        return false;
+      }
+
+      const o = parseFloat(obtained);
+      const m = parseFloat(total);
+
+      // Zero / negative
+      if (o < 0 || m <= 0) {
+        Alert.alert(
+          "Invalid marks",
+          `Subject ${i + 1}:\nMarks cannot be negative.\nMax marks must be > 0.`
+        );
+        return false;
+      }
+
+      // Marks exceed max
+      if (o > m) {
+        Alert.alert(
+          "Incorrect entry",
+          `Subject ${
+            i + 1
+          }:\nObtained marks (${o}) cannot exceed Max marks (${m}).`
+        );
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const calculatePercentage = () => {
-    const numbers = marks.map((m) => parseFloat(m) || 0);
-    const total = numbers.reduce((a, b) => a + b, 0);
-    const percent = total / subjectCount;
+    if (!validateInputs()) return;
+
+    const obtained = marks.map((m) => parseFloat(m));
+    const totalMax = maxMarks.map((m) => parseFloat(m));
+
+    const totalObtained = obtained.reduce((a, b) => a + b, 0);
+    const totalPossible = totalMax.reduce((a, b) => a + b, 0);
+
+    if (totalPossible === 0) {
+      Alert.alert("Error", "Max total marks cannot be 0.");
+      return;
+    }
+
+    const percent = (totalObtained / totalPossible) * 100;
     setPercentage(percent);
   };
 
@@ -36,34 +115,30 @@ export default function PercentageScreen() {
       style={styles.safeArea}
       edges={["top", "left", "right", "bottom"]}
     >
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
-        <Button
-          mode="outlined"
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Back */}
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
-          contentStyle={styles.backContent}
-          labelStyle={styles.backLabel}
-          icon={() => (
-            <MaterialCommunityIcons
-              name="arrow-left"
-              size={20}
-              color="#495057"
-            />
-          )}
+          activeOpacity={0.7}
         >
-          Back
-        </Button>
+          <MaterialCommunityIcons
+            name="chevron-left"
+            size={20}
+            color="#374151"
+          />
+          <Text style={styles.backButtonText}>Back</Text>
+        </TouchableOpacity>
 
+        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>📊 Percentage Calculator</Text>
           <Text style={styles.subtitle}>
-            Enter your marks to get instant results
+            Enter your marks with maximum marks
           </Text>
         </View>
 
+        {/* Subject picker */}
         <Card style={styles.card}>
           <Card.Content>
             <Text style={styles.label}>Number of subjects</Text>
@@ -81,21 +156,31 @@ export default function PercentageScreen() {
           </Card.Content>
         </Card>
 
+        {/* Inputs */}
         <Card style={styles.card}>
           <Card.Content>
-            {marks.map((mark, index) => (
-              <TextInput
-                key={index}
-                style={styles.input}
-                keyboardType="numeric"
-                placeholder={`Marks for Subject ${index + 1}`}
-                value={mark}
-                onChangeText={(text) => handleMarkChange(text, index)}
-              />
+            {marks.map((_, index) => (
+              <View style={styles.row} key={index}>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="numeric"
+                  placeholder="Marks"
+                  value={marks[index]}
+                  onChangeText={(t) => handleMarkChange(t, index, "score")}
+                />
+                <TextInput
+                  style={styles.input}
+                  keyboardType="numeric"
+                  placeholder="Max"
+                  value={maxMarks[index]}
+                  onChangeText={(t) => handleMarkChange(t, index, "max")}
+                />
+              </View>
             ))}
           </Card.Content>
         </Card>
 
+        {/* Button */}
         <Button
           mode="contained"
           style={styles.button}
@@ -104,6 +189,7 @@ export default function PercentageScreen() {
           Calculate Percentage
         </Button>
 
+        {/* Result */}
         {percentage !== null && (
           <Card style={styles.resultCard}>
             <Card.Content>
@@ -117,50 +203,49 @@ export default function PercentageScreen() {
   );
 }
 
+// ============================================================
+// Styles — untouched
+// ============================================================
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#fdfdfd",
-  },
-  container: {
-    flexGrow: 1,
-    padding: 20,
-  },
-  // 🔙 Back button
+  safeArea: { flex: 1, backgroundColor: "#fdfdfd" },
+  container: { flexGrow: 1, padding: 20 },
   backButton: {
-    borderRadius: 30,
-    backgroundColor: "#f1f3f5",
-    borderWidth: 0,
-    alignSelf: "flex-start",
-    marginBottom: 10,
-  },
-  backContent: {
-    flexDirection: "row-reverse", // Icon left, text right
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-  },
-  backLabel: {
-    fontSize: 15,
-    color: "#495057",
-    marginLeft: 4,
-  },
-  // Header
-  header: {
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 24,
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10, // better tap size
+    backgroundColor: "#F8F9FA",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    alignSelf: "flex-start",
+    marginBottom: 20,
+
+    // iOS-like shadow
+    shadowColor: "#000",
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+
+    // Android ripple
+    elevation: 0,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: "#212529",
+  backButtonText: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#374151",
   },
+
+  header: { alignItems: "center", marginBottom: 24 },
+  title: { fontSize: 26, fontWeight: "700", color: "#212529" },
   subtitle: {
     fontSize: 14,
     color: "#6c757d",
     marginTop: 6,
     textAlign: "center",
   },
-  // Cards
+
   card: {
     borderRadius: 18,
     marginBottom: 16,
@@ -171,37 +256,35 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
   },
-  label: {
-    fontSize: 15,
-    fontWeight: "500",
-    marginBottom: 8,
-    color: "#343a40",
-  },
+
+  label: { fontSize: 15, fontWeight: "500", marginBottom: 8, color: "#343a40" },
+
   pickerWrapper: {
     borderWidth: 1,
     borderColor: "#dee2e6",
     borderRadius: 10,
     overflow: "hidden",
   },
-  picker: {
-    width: "100%",
-  },
+  picker: { width: "100%" },
+
+  row: { flexDirection: "row", gap: 10, marginBottom: 12 },
+
   input: {
+    flex: 1,
     borderWidth: 1,
     borderColor: "#dee2e6",
     borderRadius: 10,
     padding: 12,
-    marginBottom: 12,
     fontSize: 15,
     backgroundColor: "#fdfdfd",
   },
-  // Calculate Button
+
   button: {
     marginTop: 10,
     borderRadius: 14,
     paddingVertical: 8,
   },
-  // Result Card
+
   resultCard: {
     marginTop: 24,
     borderRadius: 18,
