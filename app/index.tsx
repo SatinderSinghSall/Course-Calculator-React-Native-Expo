@@ -4,28 +4,26 @@ import LottieView from "lottie-react-native";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-paper";
-import Animated, { FadeIn, FadeInDown, ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const router = useRouter();
-
-  const FeatureCard = ({
-    icon,
-    title,
-    subtitle,
-    color,
-    route,
-    delay,
-  }: {
+  type FeatureCardProps = {
     icon: string;
     title: string;
     subtitle: string;
     color: string;
     route: string;
-    delay: number;
+  };
+
+  const FeatureCard: React.FC<FeatureCardProps> = ({
+    icon,
+    title,
+    subtitle,
+    color,
+    route,
   }) => (
-    <Animated.View entering={FadeInDown.delay(delay).duration(300)}>
+    <View>
       <TouchableOpacity
         activeOpacity={0.85}
         style={[styles.featureCard, { borderColor: color }]}
@@ -46,7 +44,7 @@ export default function HomeScreen() {
           color="#9CA3AF"
         />
       </TouchableOpacity>
-    </Animated.View>
+    </View>
   );
 
   return (
@@ -55,32 +53,30 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* === HERO / BRAND ANIMATION === */}
-        <Animated.View entering={ZoomIn.duration(500)}>
+        {/* HERO animation kept */}
+        <View>
           <LottieView
             autoPlay
             loop
             style={styles.lottie}
             source={require("../assets/lottie/student.json")}
           />
-        </Animated.View>
+        </View>
 
-        {/* === HEADER === */}
-        <Animated.View style={styles.header} entering={FadeIn.duration(400)}>
+        {/* HEADER */}
+        <View style={styles.header}>
           <Text style={styles.appName}>Course Calculator</Text>
           <Text style={styles.appDesc}>
             Smart academic tools for stress-free result calculations
           </Text>
-        </Animated.View>
+        </View>
 
-        {/* === MAIN FEATURES === */}
         <FeatureCard
           icon="percent"
           title="Percentage Calculator"
           subtitle="Convert marks into clean percentages instantly"
           color="#0D6EFD"
           route="/percentage"
-          delay={120}
         />
 
         <FeatureCard
@@ -89,11 +85,10 @@ export default function HomeScreen() {
           subtitle="Calculate semester-wise weighted GPA"
           color="#6F42C1"
           route="/cgpa"
-          delay={220}
         />
 
-        {/* === TIP SECTION === */}
-        <Animated.View style={styles.tipBox} entering={FadeInDown.delay(350)}>
+        {/* Tip box */}
+        <View style={styles.tipBox}>
           <View style={styles.tipIconCircle}>
             <MaterialCommunityIcons
               name="lightbulb-on-outline"
@@ -101,7 +96,6 @@ export default function HomeScreen() {
               color="#FB923C"
             />
           </View>
-
           <View style={styles.tipTextWrapper}>
             <Text style={styles.tipTitle}>Student Tip</Text>
             <Text style={styles.tipText}>
@@ -109,13 +103,10 @@ export default function HomeScreen() {
               semester.
             </Text>
           </View>
-        </Animated.View>
+        </View>
 
-        {/* === INSIGHTS === */}
-        <Animated.View
-          style={styles.sectionBox}
-          entering={FadeInDown.delay(450)}
-        >
+        {/* Insights */}
+        <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>Smart Insights</Text>
 
           <View style={styles.insightCardBlue}>
@@ -164,9 +155,8 @@ export default function HomeScreen() {
               </Text>
             </View>
           </View>
-        </Animated.View>
+        </View>
 
-        {/* === FOOTER === */}
         <Text style={styles.footer}>made with ❤️ by Satinder</Text>
       </ScrollView>
     </SafeAreaView>
