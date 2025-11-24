@@ -4,7 +4,6 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
-  ScrollView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -12,6 +11,7 @@ import {
 } from "react-native";
 import { Button, Card, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function CgpaScreen() {
   const router = useRouter();
@@ -36,7 +36,6 @@ export default function CgpaScreen() {
     value: string
   ) => {
     const clean = value.replace(/\s+/g, "");
-
     setSemesters((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [field]: clean };
@@ -56,7 +55,6 @@ export default function CgpaScreen() {
     for (let i = 0; i < semesters.length; i++) {
       const { sgpa, credits } = semesters[i];
 
-      // empty
       if (!sgpa || !credits) {
         Alert.alert(
           "Missing Input",
@@ -68,7 +66,6 @@ export default function CgpaScreen() {
       const s = parseFloat(sgpa);
       const c = parseFloat(credits);
 
-      // Not numbers
       if (isNaN(s) || isNaN(c)) {
         Alert.alert(
           "Invalid Input",
@@ -77,7 +74,6 @@ export default function CgpaScreen() {
         return false;
       }
 
-      // SGPA range
       if (s < 0 || s > 10) {
         Alert.alert(
           "Invalid SGPA",
@@ -86,7 +82,6 @@ export default function CgpaScreen() {
         return false;
       }
 
-      // Credits > 0
       if (c <= 0) {
         Alert.alert(
           "Invalid Credits",
@@ -94,15 +89,6 @@ export default function CgpaScreen() {
         );
         return false;
       }
-
-      // (Optional strict behavior)
-      // if (!Number.isInteger(c)) {
-      //   Alert.alert(
-      //     "Invalid credits",
-      //     `Semester ${i + 1}: Credits must be whole numbers`
-      //   );
-      //   return false;
-      // }
     }
 
     return true;
@@ -132,7 +118,12 @@ export default function CgpaScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.container}
+        enableOnAndroid={true}
+        extraScrollHeight={120}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Back */}
         <TouchableOpacity
           style={styles.backButton}
@@ -172,7 +163,7 @@ export default function CgpaScreen() {
           </View>
         </Card>
 
-        {/* Semester inputs */}
+        {/* Semester Inputs */}
         {semesters.map((sem, index) => (
           <Card key={index} style={styles.card}>
             <Text style={styles.semTitle}>Semester {index + 1}</Text>
@@ -195,7 +186,7 @@ export default function CgpaScreen() {
           </Card>
         ))}
 
-        {/* Actions */}
+        {/* Buttons */}
         <View style={styles.buttonRow}>
           <Button
             mode="outlined"
@@ -214,28 +205,20 @@ export default function CgpaScreen() {
           </Button>
         </View>
 
-        {/* Result */}
         {cgpa !== null && (
           <Card style={styles.resultCard}>
             <Text style={styles.resultValue}>{cgpa}</Text>
             <Text style={styles.resultLabel}>Final CGPA</Text>
           </Card>
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }
 
-// ========= STYLES =========
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#fdfdfd",
-  },
-  container: {
-    padding: 20,
-    paddingBottom: 40,
-  },
+  safeArea: { flex: 1, backgroundColor: "#fdfdfd" },
+  container: { flexGrow: 1, padding: 20, paddingBottom: 40 },
 
   backButton: {
     flexDirection: "row",
@@ -256,15 +239,8 @@ const styles = StyleSheet.create({
     color: "#374151",
   },
 
-  header: {
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: "#212529",
-  },
+  header: { alignItems: "center", marginBottom: 24 },
+  title: { fontSize: 26, fontWeight: "700", color: "#212529" },
   subtitle: {
     fontSize: 14,
     color: "#6c757d",
@@ -278,18 +254,15 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: "white",
     elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
   },
 
   label: {
     fontSize: 15,
     fontWeight: "500",
-    color: "#343a40",
     marginBottom: 8,
+    color: "#343a40",
   },
+
   semTitle: {
     fontSize: 16,
     fontWeight: "600",
@@ -323,17 +296,9 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     marginTop: 10,
   },
-  button: {
-    flex: 1,
-    marginHorizontal: 4,
-    borderRadius: 12,
-  },
-  generateButton: {
-    borderColor: "#0d6efd",
-  },
-  calculateButton: {
-    backgroundColor: "#0d6efd",
-  },
+  button: { flex: 1, marginHorizontal: 4, borderRadius: 12 },
+  generateButton: { borderColor: "#0d6efd" },
+  calculateButton: { backgroundColor: "#0d6efd" },
 
   resultCard: {
     padding: 26,

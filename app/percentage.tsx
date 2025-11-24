@@ -4,7 +4,6 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
-  ScrollView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -12,6 +11,7 @@ import {
 } from "react-native";
 import { Button, Card, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function PercentageScreen() {
   const router = useRouter();
@@ -34,6 +34,7 @@ export default function PercentageScreen() {
     type: "score" | "max"
   ) => {
     const cleaned = text.replace(/\s+/g, "");
+
     if (type === "score") {
       const updated = [...marks];
       updated[index] = cleaned;
@@ -46,20 +47,18 @@ export default function PercentageScreen() {
   };
 
   // =============================
-  // VALIDATIONS 🚨
+  // VALIDATION
   // =============================
   const validateInputs = () => {
     for (let i = 0; i < subjectCount; i++) {
       const obtained = marks[i];
       const total = maxMarks[i];
 
-      // Empty field check
       if (obtained === "" || total === "") {
         Alert.alert("Missing values", `Please fill Subject ${i + 1}`);
         return false;
       }
 
-      // Non-number validation
       if (isNaN(Number(obtained)) || isNaN(Number(total))) {
         Alert.alert("Invalid input", `Subject ${i + 1}: Enter only numbers.`);
         return false;
@@ -68,22 +67,21 @@ export default function PercentageScreen() {
       const o = parseFloat(obtained);
       const m = parseFloat(total);
 
-      // Zero / negative
       if (o < 0 || m <= 0) {
         Alert.alert(
           "Invalid marks",
-          `Subject ${i + 1}:\nMarks cannot be negative.\nMax marks must be > 0.`
+          `Subject ${i + 1}:
+Marks cannot be negative.
+Max marks must be > 0.`
         );
         return false;
       }
 
-      // Marks exceed max
       if (o > m) {
         Alert.alert(
           "Incorrect entry",
-          `Subject ${
-            i + 1
-          }:\nObtained marks (${o}) cannot exceed Max marks (${m}).`
+          `Subject ${i + 1}:
+Obtained marks (${o}) cannot exceed Max marks (${m}).`
         );
         return false;
       }
@@ -111,12 +109,14 @@ export default function PercentageScreen() {
   };
 
   return (
-    <SafeAreaView
-      style={styles.safeArea}
-      edges={["top", "left", "right", "bottom"]}
-    >
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Back */}
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.container}
+        enableOnAndroid={true}
+        extraScrollHeight={120}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Back Button */}
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
@@ -138,7 +138,7 @@ export default function PercentageScreen() {
           </Text>
         </View>
 
-        {/* Subject picker */}
+        {/* Subject Picker */}
         <Card style={styles.card}>
           <Card.Content>
             <Text style={styles.label}>Number of subjects</Text>
@@ -156,7 +156,7 @@ export default function PercentageScreen() {
           </Card.Content>
         </Card>
 
-        {/* Inputs */}
+        {/* Inputs List */}
         <Card style={styles.card}>
           <Card.Content>
             {marks.map((_, index) => (
@@ -180,7 +180,7 @@ export default function PercentageScreen() {
           </Card.Content>
         </Card>
 
-        {/* Button */}
+        {/* Calculate Button */}
         <Button
           mode="contained"
           style={styles.button}
@@ -189,7 +189,7 @@ export default function PercentageScreen() {
           Calculate Percentage
         </Button>
 
-        {/* Result */}
+        {/* Result Card */}
         {percentage !== null && (
           <Card style={styles.resultCard}>
             <Card.Content>
@@ -198,67 +198,44 @@ export default function PercentageScreen() {
             </Card.Content>
           </Card>
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }
 
 // ============================================================
-// Styles — untouched
+// Styles — untouched except minor tweaks
 // ============================================================
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#fdfdfd" },
   container: { flexGrow: 1, padding: 20 },
+
   backButton: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
     paddingHorizontal: 14,
-    paddingVertical: 10, // better tap size
+    paddingVertical: 10,
     backgroundColor: "#F8F9FA",
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E5E7EB",
     alignSelf: "flex-start",
     marginBottom: 20,
-
-    // iOS-like shadow
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-
-    // Android ripple
-    elevation: 0,
   },
-  backButtonText: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#374151",
-  },
+  backButtonText: { fontSize: 15, fontWeight: "500", color: "#374151" },
 
   header: { alignItems: "center", marginBottom: 24 },
   title: { fontSize: 26, fontWeight: "700", color: "#212529" },
-  subtitle: {
-    fontSize: 14,
-    color: "#6c757d",
-    marginTop: 6,
-    textAlign: "center",
-  },
+  subtitle: { fontSize: 14, color: "#6c757d", marginTop: 6 },
 
   card: {
     borderRadius: 18,
     marginBottom: 16,
     backgroundColor: "white",
     elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
   },
-
-  label: { fontSize: 15, fontWeight: "500", marginBottom: 8, color: "#343a40" },
-
+  label: { fontSize: 15, fontWeight: "500", marginBottom: 8 },
   pickerWrapper: {
     borderWidth: 1,
     borderColor: "#dee2e6",
@@ -296,12 +273,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     color: "#0d6efd",
-    textAlign: "center",
   },
-  resultSub: {
-    fontSize: 14,
-    color: "#495057",
-    marginTop: 4,
-    textAlign: "center",
-  },
+  resultSub: { fontSize: 14, color: "#495057", marginTop: 4 },
 });
