@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from "react-native";
 import { Button, Card, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +16,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 export default function CgpaScreen() {
   const router = useRouter();
+  const isDark = useColorScheme() === "dark";
 
   const [semesterCount, setSemesterCount] = useState(0);
   const [semesters, setSemesters] = useState<
@@ -43,9 +45,6 @@ export default function CgpaScreen() {
     });
   };
 
-  // =============================
-  // VALIDATIONS 🚨
-  // =============================
   const validateInputs = () => {
     if (semesterCount === 0) {
       Alert.alert("Error", "Please select number of semesters!");
@@ -90,7 +89,6 @@ export default function CgpaScreen() {
         return false;
       }
     }
-
     return true;
   };
 
@@ -107,53 +105,85 @@ export default function CgpaScreen() {
       totalCredits += c;
     });
 
-    if (totalCredits === 0) {
-      Alert.alert("Error", "Credits cannot be zero");
-      return;
-    }
-
     const val = totalWeighted / totalCredits;
     setCgpa(Number(val.toFixed(2)));
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        { backgroundColor: isDark ? "#0f172a" : "#fdfdfd" },
+      ]}
+    >
       <KeyboardAwareScrollView
         contentContainerStyle={styles.container}
-        enableOnAndroid={true}
+        enableOnAndroid
         extraScrollHeight={120}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Back */}
         <TouchableOpacity
-          style={styles.backButton}
+          style={[
+            styles.backButton,
+            {
+              backgroundColor: isDark ? "#1e293b" : "#F3F4F6",
+              borderColor: isDark ? "#334155" : "#E5E7EB",
+            },
+          ]}
           onPress={() => router.back()}
-          activeOpacity={0.7}
         >
           <MaterialCommunityIcons
             name="chevron-left"
             size={20}
-            color="#374151"
+            color={isDark ? "#e5e7eb" : "#374151"}
           />
-          <Text style={styles.backButtonText}>Back</Text>
+          <Text
+            style={[
+              styles.backButtonText,
+              { color: isDark ? "#e5e7eb" : "#374151" },
+            ]}
+          >
+            Back
+          </Text>
         </TouchableOpacity>
 
-        {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>🎓 CGPA Calculator</Text>
-          <Text style={styles.subtitle}>
+          <Text
+            style={[styles.title, { color: isDark ? "#f8fafc" : "#212529" }]}
+          >
+            🎓 CGPA Calculator
+          </Text>
+          <Text
+            style={[styles.subtitle, { color: isDark ? "#9ca3af" : "#6c757d" }]}
+          >
             Enter SGPA and credits for each semester
           </Text>
         </View>
 
-        {/* Semester Picker */}
-        <Card style={styles.card}>
-          <Text style={styles.label}>Number of Semesters</Text>
-          <View style={styles.pickerWrapper}>
+        <Card
+          style={[
+            styles.card,
+            { backgroundColor: isDark ? "#1e293b" : "#ffffff" },
+          ]}
+        >
+          <Text
+            style={[styles.label, { color: isDark ? "#e5e7eb" : "#343a40" }]}
+          >
+            Number of Semesters
+          </Text>
+          <View
+            style={[
+              styles.pickerWrapper,
+              {
+                backgroundColor: isDark ? "#1e293b" : "#ffffff",
+                borderColor: isDark ? "#334155" : "#dee2e6",
+              },
+            ]}
+          >
             <Picker
               selectedValue={semesterCount}
-              style={styles.picker}
-              onValueChange={(val) => handleSemesterCountChange(val)}
+              style={{ color: isDark ? "#e5e7eb" : "#212529" }}
+              onValueChange={handleSemesterCountChange}
             >
               <Picker.Item label="-- Select --" value={0} />
               {Array.from({ length: 12 }, (_, i) => (
@@ -163,22 +193,43 @@ export default function CgpaScreen() {
           </View>
         </Card>
 
-        {/* Semester Inputs */}
         {semesters.map((sem, index) => (
-          <Card key={index} style={styles.card}>
+          <Card
+            key={index}
+            style={[
+              styles.card,
+              { backgroundColor: isDark ? "#1e293b" : "#ffffff" },
+            ]}
+          >
             <Text style={styles.semTitle}>Semester {index + 1}</Text>
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: isDark ? "#020617" : "#fdfdfd",
+                  borderColor: isDark ? "#334155" : "#dee2e6",
+                  color: isDark ? "#e5e7eb" : "#212529",
+                },
+              ]}
               placeholder="SGPA"
+              placeholderTextColor={isDark ? "#94a3b8" : "#6c757d"}
               keyboardType="numeric"
               value={sem.sgpa}
               onChangeText={(t) => updateSemester(index, "sgpa", t)}
             />
 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: isDark ? "#020617" : "#fdfdfd",
+                  borderColor: isDark ? "#334155" : "#dee2e6",
+                  color: isDark ? "#e5e7eb" : "#212529",
+                },
+              ]}
               placeholder="Credits"
+              placeholderTextColor={isDark ? "#94a3b8" : "#6c757d"}
               keyboardType="numeric"
               value={sem.credits}
               onChangeText={(t) => updateSemester(index, "credits", t)}
@@ -186,19 +237,17 @@ export default function CgpaScreen() {
           </Card>
         ))}
 
-        {/* Buttons */}
         <View style={styles.buttonRow}>
           <Button
             mode="outlined"
-            style={[styles.button, styles.generateButton]}
+            style={styles.button}
             onPress={() => handleSemesterCountChange(semesterCount)}
           >
             Reset
           </Button>
-
           <Button
             mode="contained"
-            style={[styles.button, styles.calculateButton]}
+            style={styles.button}
             onPress={calculateCgpa}
           >
             Calculate
@@ -206,9 +255,21 @@ export default function CgpaScreen() {
         </View>
 
         {cgpa !== null && (
-          <Card style={styles.resultCard}>
+          <Card
+            style={[
+              styles.resultCard,
+              { backgroundColor: isDark ? "#020617" : "#e7f5ff" },
+            ]}
+          >
             <Text style={styles.resultValue}>{cgpa}</Text>
-            <Text style={styles.resultLabel}>Final CGPA</Text>
+            <Text
+              style={[
+                styles.resultLabel,
+                { color: isDark ? "#9ca3af" : "#495057" },
+              ]}
+            >
+              Final CGPA
+            </Text>
           </Card>
         )}
       </KeyboardAwareScrollView>
@@ -217,7 +278,7 @@ export default function CgpaScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fdfdfd" },
+  safeArea: { flex: 1 },
   container: { flexGrow: 1, padding: 20, paddingBottom: 40 },
 
   backButton: {
@@ -227,67 +288,44 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 12,
-    backgroundColor: "#F3F4F6",
-    borderColor: "#E5E7EB",
     borderWidth: 1,
     alignSelf: "flex-start",
     marginBottom: 20,
   },
-  backButtonText: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#374151",
-  },
+  backButtonText: { fontSize: 15, fontWeight: "500" },
 
   header: { alignItems: "center", marginBottom: 24 },
-  title: { fontSize: 26, fontWeight: "700", color: "#212529" },
-  subtitle: {
-    fontSize: 14,
-    color: "#6c757d",
-    marginTop: 6,
-    textAlign: "center",
-  },
+  title: { fontSize: 26, fontWeight: "700" },
+  subtitle: { fontSize: 14, marginTop: 6, textAlign: "center" },
 
   card: {
     marginBottom: 16,
     padding: 16,
     borderRadius: 18,
-    backgroundColor: "white",
     elevation: 2,
   },
 
-  label: {
-    fontSize: 15,
-    fontWeight: "500",
-    marginBottom: 8,
-    color: "#343a40",
-  },
+  label: { fontSize: 15, fontWeight: "500", marginBottom: 8 },
 
   semTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#0d6efd",
+    color: "#6366f1",
     marginBottom: 12,
   },
 
   input: {
     borderWidth: 1,
-    borderColor: "#dee2e6",
     padding: 12,
     borderRadius: 10,
     fontSize: 15,
     marginBottom: 10,
-    backgroundColor: "#fdfdfd",
   },
 
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: "#dee2e6",
     borderRadius: 10,
     overflow: "hidden",
-  },
-  picker: {
-    width: "100%",
   },
 
   buttonRow: {
@@ -297,23 +335,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   button: { flex: 1, marginHorizontal: 4, borderRadius: 12 },
-  generateButton: { borderColor: "#0d6efd" },
-  calculateButton: { backgroundColor: "#0d6efd" },
 
   resultCard: {
     padding: 26,
     borderRadius: 18,
-    backgroundColor: "#e7f5ff",
     alignItems: "center",
   },
   resultValue: {
     fontSize: 32,
     fontWeight: "800",
-    color: "#0d6efd",
+    color: "#6366f1",
   },
-  resultLabel: {
-    fontSize: 14,
-    color: "#495057",
-    marginTop: 4,
-  },
+  resultLabel: { fontSize: 14, marginTop: 4 },
 });

@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from "react-native";
 import { Button, Card, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +16,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 export default function PercentageScreen() {
   const router = useRouter();
+  const isDark = useColorScheme() === "dark";
 
   const [subjectCount, setSubjectCount] = useState(2);
   const [marks, setMarks] = useState<string[]>(["", ""]);
@@ -46,9 +48,6 @@ export default function PercentageScreen() {
     }
   };
 
-  // =============================
-  // VALIDATION
-  // =============================
   const validateInputs = () => {
     for (let i = 0; i < subjectCount; i++) {
       const obtained = marks[i];
@@ -86,7 +85,6 @@ Obtained marks (${o}) cannot exceed Max marks (${m}).`
         return false;
       }
     }
-
     return true;
   };
 
@@ -99,54 +97,87 @@ Obtained marks (${o}) cannot exceed Max marks (${m}).`
     const totalObtained = obtained.reduce((a, b) => a + b, 0);
     const totalPossible = totalMax.reduce((a, b) => a + b, 0);
 
-    if (totalPossible === 0) {
-      Alert.alert("Error", "Max total marks cannot be 0.");
-      return;
-    }
-
     const percent = (totalObtained / totalPossible) * 100;
     setPercentage(percent);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        { backgroundColor: isDark ? "#0f172a" : "#fdfdfd" },
+      ]}
+    >
       <KeyboardAwareScrollView
         contentContainerStyle={styles.container}
-        enableOnAndroid={true}
+        enableOnAndroid
         extraScrollHeight={120}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Back Button */}
         <TouchableOpacity
-          style={styles.backButton}
+          style={[
+            styles.backButton,
+            {
+              backgroundColor: isDark ? "#1e293b" : "#F8F9FA",
+              borderColor: isDark ? "#334155" : "#E5E7EB",
+            },
+          ]}
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
           <MaterialCommunityIcons
             name="chevron-left"
             size={20}
-            color="#374151"
+            color={isDark ? "#e5e7eb" : "#374151"}
           />
-          <Text style={styles.backButtonText}>Back</Text>
+          <Text
+            style={[
+              styles.backButtonText,
+              { color: isDark ? "#e5e7eb" : "#374151" },
+            ]}
+          >
+            Back
+          </Text>
         </TouchableOpacity>
 
-        {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>📊 Percentage Calculator</Text>
-          <Text style={styles.subtitle}>
+          <Text
+            style={[styles.title, { color: isDark ? "#f8fafc" : "#212529" }]}
+          >
+            📊 Percentage Calculator
+          </Text>
+          <Text
+            style={[styles.subtitle, { color: isDark ? "#9ca3af" : "#6c757d" }]}
+          >
             Enter your marks with maximum marks
           </Text>
         </View>
 
-        {/* Subject Picker */}
-        <Card style={styles.card}>
+        <Card
+          style={[
+            styles.card,
+            { backgroundColor: isDark ? "#1e293b" : "#ffffff" },
+          ]}
+        >
           <Card.Content>
-            <Text style={styles.label}>Number of subjects</Text>
-            <View style={styles.pickerWrapper}>
+            <Text
+              style={[styles.label, { color: isDark ? "#e5e7eb" : "#212529" }]}
+            >
+              Number of subjects
+            </Text>
+            <View
+              style={[
+                styles.pickerWrapper,
+                {
+                  backgroundColor: isDark ? "#1e293b" : "#ffffff",
+                  borderColor: isDark ? "#334155" : "#dee2e6",
+                },
+              ]}
+            >
               <Picker
                 selectedValue={subjectCount}
-                onValueChange={(value) => handleSubjectChange(value)}
-                style={styles.picker}
+                onValueChange={handleSubjectChange}
+                style={{ color: isDark ? "#e5e7eb" : "#212529" }}
               >
                 {[...Array(10).keys()].map((n) => (
                   <Picker.Item key={n + 1} label={`${n + 1}`} value={n + 1} />
@@ -156,22 +187,42 @@ Obtained marks (${o}) cannot exceed Max marks (${m}).`
           </Card.Content>
         </Card>
 
-        {/* Inputs List */}
-        <Card style={styles.card}>
+        <Card
+          style={[
+            styles.card,
+            { backgroundColor: isDark ? "#1e293b" : "#ffffff" },
+          ]}
+        >
           <Card.Content>
             {marks.map((_, index) => (
               <View style={styles.row} key={index}>
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: isDark ? "#020617" : "#fdfdfd",
+                      borderColor: isDark ? "#334155" : "#dee2e6",
+                      color: isDark ? "#e5e7eb" : "#212529",
+                    },
+                  ]}
                   keyboardType="numeric"
                   placeholder="Marks"
+                  placeholderTextColor={isDark ? "#94a3b8" : "#6c757d"}
                   value={marks[index]}
                   onChangeText={(t) => handleMarkChange(t, index, "score")}
                 />
                 <TextInput
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: isDark ? "#020617" : "#fdfdfd",
+                      borderColor: isDark ? "#334155" : "#dee2e6",
+                      color: isDark ? "#e5e7eb" : "#212529",
+                    },
+                  ]}
                   keyboardType="numeric"
                   placeholder="Max"
+                  placeholderTextColor={isDark ? "#94a3b8" : "#6c757d"}
                   value={maxMarks[index]}
                   onChangeText={(t) => handleMarkChange(t, index, "max")}
                 />
@@ -180,7 +231,6 @@ Obtained marks (${o}) cannot exceed Max marks (${m}).`
           </Card.Content>
         </Card>
 
-        {/* Calculate Button */}
         <Button
           mode="contained"
           style={styles.button}
@@ -189,12 +239,23 @@ Obtained marks (${o}) cannot exceed Max marks (${m}).`
           Calculate Percentage
         </Button>
 
-        {/* Result Card */}
         {percentage !== null && (
-          <Card style={styles.resultCard}>
+          <Card
+            style={[
+              styles.resultCard,
+              { backgroundColor: isDark ? "#020617" : "#e7f5ff" },
+            ]}
+          >
             <Card.Content>
               <Text style={styles.resultText}>{percentage.toFixed(2)}%</Text>
-              <Text style={styles.resultSub}>Your overall percentage</Text>
+              <Text
+                style={[
+                  styles.resultSub,
+                  { color: isDark ? "#9ca3af" : "#495057" },
+                ]}
+              >
+                Your overall percentage
+              </Text>
             </Card.Content>
           </Card>
         )}
@@ -203,11 +264,8 @@ Obtained marks (${o}) cannot exceed Max marks (${m}).`
   );
 }
 
-// ============================================================
-// Styles — untouched except minor tweaks
-// ============================================================
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fdfdfd" },
+  safeArea: { flex: 1 },
   container: { flexGrow: 1, padding: 20 },
 
   backButton: {
@@ -216,44 +274,39 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: "#F8F9FA",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
     alignSelf: "flex-start",
     marginBottom: 20,
   },
-  backButtonText: { fontSize: 15, fontWeight: "500", color: "#374151" },
+  backButtonText: { fontSize: 15, fontWeight: "500" },
 
   header: { alignItems: "center", marginBottom: 24 },
-  title: { fontSize: 26, fontWeight: "700", color: "#212529" },
-  subtitle: { fontSize: 14, color: "#6c757d", marginTop: 6 },
+  title: { fontSize: 26, fontWeight: "700" },
+  subtitle: { fontSize: 14, marginTop: 6 },
 
   card: {
     borderRadius: 18,
     marginBottom: 16,
-    backgroundColor: "white",
     elevation: 3,
   },
+
   label: { fontSize: 15, fontWeight: "500", marginBottom: 8 },
+
   pickerWrapper: {
     borderWidth: 1,
-    borderColor: "#dee2e6",
     borderRadius: 10,
     overflow: "hidden",
   },
-  picker: { width: "100%" },
 
   row: { flexDirection: "row", gap: 10, marginBottom: 12 },
 
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#dee2e6",
     borderRadius: 10,
     padding: 12,
     fontSize: 15,
-    backgroundColor: "#fdfdfd",
   },
 
   button: {
@@ -265,14 +318,13 @@ const styles = StyleSheet.create({
   resultCard: {
     marginTop: 24,
     borderRadius: 18,
-    backgroundColor: "#e7f5ff",
     elevation: 3,
     alignItems: "center",
   },
   resultText: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#0d6efd",
+    color: "#6366f1",
   },
-  resultSub: { fontSize: 14, color: "#495057", marginTop: 4 },
+  resultSub: { fontSize: 14, marginTop: 4 },
 });
