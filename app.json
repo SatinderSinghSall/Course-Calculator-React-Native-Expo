@@ -2,7 +2,7 @@
   "expo": {
     "name": "Course Calculator",
     "slug": "course-calculator",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "coursecalculator",
@@ -17,7 +17,7 @@
     },
     "android": {
       "package": "com.satinder.coursecalculator",
-      "versionCode": 3,
+      "versionCode": 4,
       "permissions": [],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",

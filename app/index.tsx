@@ -8,9 +8,13 @@ import {
   TouchableOpacity,
   View,
   useColorScheme,
+  Pressable,
+  Linking,
+  Platform,
 } from "react-native";
 import { Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Constants from "expo-constants";
 
 const lightColors = {
   background: "#F5F7FB",
@@ -60,6 +64,15 @@ const darkColors = {
   insightGreenBorder: "#1E4D2B",
 };
 
+const appVersion = Constants.expoConfig?.version ?? "1.0.0";
+
+const buildNumber =
+  Platform.OS === "ios"
+    ? Constants.expoConfig?.ios?.buildNumber
+    : Constants.expoConfig?.android?.versionCode;
+
+const versionLabel = `v${appVersion} • Build ${buildNumber}`;
+
 export default function HomeScreen() {
   const router = useRouter();
   const scheme = useColorScheme();
@@ -72,6 +85,22 @@ export default function HomeScreen() {
     color: string;
     route: string;
   };
+
+  const footerTexts = [
+    "Crafted with care • Satinder Singh Sall",
+    "Built with ❤️ by Satinder",
+    "Designed & developed by Satinder",
+  ];
+
+  const [footerIndex, setFooterIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setFooterIndex((prev) => (prev + 1) % footerTexts.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const FeatureCard: React.FC<FeatureCardProps> = ({
     icon,
@@ -277,9 +306,20 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <Text style={[styles.footer, { color: colors.footer }]}>
-          made with ❤️ by Satinder
-        </Text>
+        <Pressable
+          onPress={() =>
+            Linking.openURL("https://satinder-portfolio.vercel.app")
+          }
+          style={styles.footerContainer}
+        >
+          <Text style={[styles.footerText, { color: colors.footer }]}>
+            {footerTexts[footerIndex]}
+          </Text>
+
+          <Text style={[styles.footerMeta, { color: colors.footer }]}>
+            {versionLabel}
+          </Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -358,10 +398,28 @@ const styles = StyleSheet.create({
   insightTitle: { fontSize: 14.3, fontWeight: "700", marginBottom: 2 },
   insightSubtitle: { fontSize: 12.6, lineHeight: 17 },
 
-  footer: {
+  footerContainer: {
+    marginTop: 32,
+    paddingTop: 18,
+    paddingBottom: 6,
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(150,150,150,0.12)",
+  },
+
+  footerText: {
+    fontSize: 14,
+    fontWeight: "500",
+    letterSpacing: 0.4,
+    opacity: 0.9,
     textAlign: "center",
-    fontSize: 13.6,
-    paddingTop: 10,
-    marginBottom: 10,
+  },
+
+  footerMeta: {
+    marginTop: 4,
+    fontSize: 13,
+    fontWeight: "400",
+    letterSpacing: 0.6,
+    opacity: 0.55,
   },
 });
